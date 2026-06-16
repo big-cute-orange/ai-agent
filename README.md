@@ -1,73 +1,96 @@
 # AI Agent 平台
 
-基于 [Turborepo](https://turborepo.dev) + pnpm 构建的 monorepo 项目，包含多个前端子站和共享包。
+基于 [Turborepo](https://turborepo.dev) + pnpm 构建的 monorepo 项目，包含用户前台、管理后台和后端接口服务。
 
 ## 项目结构
 
 ```
 ai-agent/
 ├── apps/
-│   ├── admin/    # 管理后台 (Next.js, 端口 3006)
-│   ├── web/      # 用户前台 (Next.js, 端口 3005)
-│   └── api/      # 后端接口 (Cloudflare Workers + Hono)
+│   ├── web/      # 用户前台 (Next.js 16, 端口 3005)
+│   ├── admin/    # 管理后台 (Next.js 16, 端口 3006)
+│   └── api/      # 后端接口 (Hono + Cloudflare Workers)
 └── packages/
-    ├── ui/                  # 共享 React 组件库
+    ├── ui/                  # 共享 React 组件库 (@repo/ui)
     ├── eslint-config/       # 共享 ESLint 配置
     └── typescript-config/   # 共享 TypeScript 配置
 ```
 
 ## 技术栈
 
-- **框架**：Next.js 16 + React 19
-- **样式**：Tailwind CSS v4（共享主题 token）
-- **后端**：Hono + Cloudflare Workers
-- **构建**：Turborepo + pnpm workspace
-- **语言**：TypeScript
+| 层级 | 技术 |
+|---|---|
+| 框架 | Next.js 16 + React 19 |
+| 样式 | Tailwind CSS v4 + shadcn/ui 组件原语 |
+| 后端 | Hono v4 + Cloudflare Workers |
+| 构建 | Turborepo v2 + pnpm workspace |
+| 语言 | TypeScript 5.9 |
+| 包管理 | pnpm 11 (catalog 版本锁定) |
 
 ## 快速开始
 
-安装依赖：
+**安装依赖（Node >= 18 required）：**
 
 ```sh
 pnpm install
 ```
 
-启动所有应用（开发模式）：
+**启动所有应用（开发模式）：**
 
 ```sh
 pnpm dev
 ```
 
-启动单个应用：
+**启动单个应用：**
 
 ```sh
-pnpm dev --filter=web
-pnpm dev --filter=admin
+pnpm dev:web    # http://localhost:3005
+pnpm dev:admin  # http://localhost:3006
+pnpm dev:api    # Wrangler dev server
 ```
 
-## 构建
-
-构建所有应用：
+## 构建与检查
 
 ```sh
-pnpm build
-```
+pnpm build          # 构建所有应用
+pnpm lint           # 全局 lint 检查
+pnpm check-types    # 全局类型检查
+pnpm format         # 格式化所有 .ts/.tsx/.md 文件
 
-构建单个应用：
-
-```sh
+# 单应用构建
 pnpm build --filter=web
+pnpm build --filter=admin
 ```
 
-## 共享 UI 与样式
+## API 部署
 
-共享组件位于 `packages/ui`，通过 `@repo/ui` 引用：
+后端使用 [Cloudflare Workers](https://workers.cloudflare.com/) + [Wrangler](https://developers.cloudflare.com/workers/wrangler/) 部署：
+
+```sh
+cd apps/api
+pnpm deploy         # 部署到 Cloudflare Workers
+pnpm cf-typegen     # 生成 Cloudflare Bindings 类型
+```
+
+健康检查端点：`GET /health` → `{ ok: true, service: "api" }`
+
+## 共享 UI 组件
+
+组件位于 `packages/ui`，通过 `@repo/ui` 引用：
 
 ```tsx
 import { Button } from '@repo/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@repo/ui/card'
+import { Input } from '@repo/ui/input'
+import { Label } from '@repo/ui/label'
+import { Separator } from '@repo/ui/separator'
 ```
 
-共享 Tailwind 主题 token 位于 `packages/ui/src/theme.css`，在各子站的 `globals.css` 中导入：
+组件基于 [Radix UI](https://www.radix-ui.com/) 原语 + [CVA](https://cva.style/) 变体管理，样式工具通过 `@repo/ui/lib/utils` 的 `cn()` 函数合并。
+
+## 共享 Tailwind 主题
+
+主题 token 位于 `packages/ui/src/theme.css`，在各子站的 `globals.css` 中导入：
 
 ```css
 @import 'tailwindcss';
@@ -76,12 +99,16 @@ import { Button } from '@repo/ui/button'
 
 可用的自定义 token：
 
-| Token | 说明 |
-|---|---|
-| `brand-50` ~ `brand-700` | 品牌色阶 |
-| `surface-strong` | 深色蒙层色 |
-| `shadow-card` | 卡片阴影 |
-| `radius-card` | 卡片圆角 |
+| Token | 值 | 说明 |
+|---|---|---|
+| `--color-brand-50` | `#f3f7ff` | 品牌色最浅 |
+| `--color-brand-100` | `#dce8ff` | 品牌色浅 |
+| `--color-brand-500` | `#4f7cff` | 品牌主色 |
+| `--color-brand-600` | `#315ee8` | 品牌色深 |
+| `--color-brand-700` | `#2749bb` | 品牌色最深 |
+| `--color-surface-strong` | `rgba(15,23,42,.78)` | 深色蒙层 |
+| `--shadow-card` | `0 24px 60px ...` | 卡片阴影 |
+| `--radius-card` | `1.5rem` | 卡片圆角 |
 
 ## 远程缓存（可选）
 
