@@ -4,20 +4,23 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from './lib/utils'
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full text-sm font-medium transition-colors disabled:pointer-events-none disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/70 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950',
+  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-medium transition-colors disabled:pointer-events-none disabled:opacity-50 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500/45 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-canvas',
   {
     variants: {
       variant: {
-        default: 'bg-brand-500 text-white hover:bg-brand-600',
-        secondary: 'bg-white/10 text-white hover:bg-white/15',
-        outline: 'border border-white/15 bg-transparent text-slate-100 hover:bg-white/10',
-        ghost: 'text-slate-100 hover:bg-white/10',
+        default: 'bg-brand-500 text-content-primary shadow-xs hover:bg-brand-600',
+        secondary:
+          'border border-border-default bg-surface-panel text-content-primary hover:border-border-strong hover:bg-surface-elevated',
+        outline:
+          'border border-border-default bg-transparent text-content-secondary hover:bg-surface-panel hover:text-content-primary',
+        ghost: 'text-content-secondary hover:bg-surface-panel hover:text-content-primary',
+        danger: 'bg-state-error text-content-primary shadow-xs hover:bg-red-600',
       },
       size: {
         default: 'h-11 px-5',
-        sm: 'h-9 px-4 text-xs',
+        sm: 'h-9 rounded-lg px-4 text-xs',
         lg: 'h-12 px-6 text-base',
-        icon: 'size-10 rounded-full',
+        icon: 'size-10 px-0',
       },
     },
     defaultVariants: {
