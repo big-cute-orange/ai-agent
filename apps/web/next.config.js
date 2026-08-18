@@ -5,7 +5,7 @@ const __dirname = fileURLToPath(new URL('.', import.meta.url))
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  transpilePackages: ['@repo/ui'],
+  transpilePackages: ['@repo/ui','@repo/contracts', '@repo/api'],
   turbopack: {
     root: path.resolve(__dirname, '../../'),
   },
