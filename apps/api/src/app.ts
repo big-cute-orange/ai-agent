@@ -9,6 +9,7 @@ import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { HTTPException } from 'hono/http-exception'
 import { validator } from 'hono/validator'
+import { getApiEnv } from './env'
 
 type AppErrorStatus = 400 | 401 | 403 | 404 | 409 | 422 | 500 | 504
 
@@ -23,7 +24,11 @@ class AppError extends Error {
   }
 }
 
-const app = new Hono()
+const app = new Hono<{
+  Bindings: {
+    APP_ENV: 'development' | 'test' | 'production'
+  }
+}>()
 
 app.use('*', cors())
 
@@ -64,7 +69,8 @@ app.notFound((c) => {
 
 const routes = app
   .get('/health', (c) => {
-    const res = buildSuccess({ service: 'api' }, createMeta());
+    const env = getApiEnv(c.env)
+    const res = buildSuccess({ service: 'api', env: env.APP_ENV }, createMeta());
     return c.json(res);
   })
   .post('/rpc/system/ping', validator('json', (value, c) => {
