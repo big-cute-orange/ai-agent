@@ -1,3 +1,42 @@
+# Web 用户前台
+
+基于 Next.js 16 的用户前台应用，使用共享 UI 组件、API 契约和 TanStack React Query。
+
+## 开发
+
+```bash
+pnpm dev
+```
+
+默认访问 [http://localhost:3005](http://localhost:3005)。从仓库根目录启动该应用：
+
+```bash
+pnpm dev:web
+```
+
+## 环境变量
+
+服务端需要配置 `API_BASE_URL`，用于调用 API 服务。环境变量会经过 Zod 校验，具体配置方式见仓库文档 [环境变量配置指南](../../docs/env-config-guide.md)。
+
+## 常用命令
+
+```bash
+pnpm check-types
+pnpm lint
+pnpm build
+```
+
+## 认证与 API
+
+认证相关方法位于 `src/auth/`，包括登录、刷新会话、启动时恢复会话和退出登录。`src/lib/http-client.ts` 提供自动附加 access token、处理 401 刷新并重试的 `authFetch`。
+
+当前前端约定的认证接口包括：
+
+- `POST /auth/web/password/login`
+- `POST /auth/web/token/refresh`
+- `POST /auth/web/logout`
+
+当前 API 应用尚未实现这些认证路由，需要由服务端或网关提供。
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/create-next-app).
 
 ## Getting Started
